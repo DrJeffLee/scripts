@@ -10,21 +10,6 @@ fi
 
 # User specific aliases and functions
 
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/users/40146600/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/users/40146600/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/users/40146600/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/users/40146600/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
 SCRATCH="/mnt/scratch2/users/40146600"
 alias scratch="cd $SCRATCH"
 PROJECT="/mnt/autofs/mcclayrds-projects/ad00069"
@@ -33,12 +18,13 @@ alias project="cd $PROJECT"
 alias queue="squeue -u 40146600"
 alias report="sacct --format=JobID,JobName,Partition,AllocCPUs,NNodes,ReqMem,State,MaxRSS,MaxVMSize,Elapsed,Submit,Start,End -j"
 
-alias of5="module load apps/openfoam/5.0/gcc-4.8.5+openmpi-3.1.4+boost-1.60.0+cmake-3.5.2+cgal-4.8.0+mgridgen-1.0+qt-5.9.1"
-alias of8="module load apps/openfoam/8/gcc-4.8.5+openmpi-4.0.0+cmake-3.5.2+qt-5.12.10"
+alias of12="module load apps/openfoam/12/gcc-14.1.0+openmpi-5.0.3+cmake-3.29.2+qt-5.15.11"
+alias of2406="module load apps/openfoamplus/24.06/gcc-14.1.0+openmpi-5.0.3+mgridgen-1.0+qt-5.15.11"
+alias of8="module load apps/openfoam/8/gcc-8.5.0+openmpi-4.1.6+cmake-3.29.2+qt-5.15.11"
 alias gp="module load apps/gnuplot/5.0.2/gcc-4.8.5"
 
 alias mpl="conda activate mpl"
-alias pvserver="rm ./log.pvserver; sbatch ~/scripts/pvserver.sh"
+alias pvserverjob="rm ./log.pvserver; sbatch ~/scripts/pvserver.sh"
 alias pvbatch="rm ./log.pvbatch; sbatch ~/scripts/pvbatch.sh"
 
 csv()
@@ -46,7 +32,7 @@ csv()
     column -s, -t < $1 | less -#2 -N -S
 }
 
-of24x()
+sowfa24x()
 {
     module load mpi/openmpi/1.10.1/gcc-4.8.5
     module load apps/cmake/3.5.2/gcc-4.8.5
@@ -73,16 +59,43 @@ of24x()
 
     export WM_NCOMPPROCS=24
     export WM_COLOURS="white blue green cyan red magenta yellow"
-}
 
-sowfa24x()
-{
-    of24x
     export SOWFA_DIR=$FOAM_INST_DIR/SOWFA-2.4.x
     export LD_LIBRARY_PATH=$SOWFA_DIR/lib/$WM_OPTIONS:$LD_LIBRARY_PATH
     export PATH=$SOWFA_DIR/applications/bin/$WM_OPTIONS:$PATH
 }
 
+of2412()
+{
+    module load openmpi
+    source ~/OpenFOAM/OpenFOAM-v2412/etc/bashrc
+}
 
+tfoam()
+{
+    module load libs/armadillo
+    module load apps/openfoamplus/24.06/gcc-14.1.0+openmpi-5.0.3+mgridgen-1.0+qt-5.15.11
+    
+    # Manually add path to gcc-14.1.0
+    export PATH=/opt/gridware/depots/54e7fb3c/el8/pkg/compilers/gcc/14.1.0/bin/:$PATH
 
+    # Manually add FOAM_USER paths
+    export FOAM_USER_LIBBIN=/mnt/scratch2/users/$USER/OpenFOAM/$USER-v$FOAM_API/platforms/$WM_OPTIONS/lib
+    export LD_LIBRARY_PATH=$FOAM_USER_LIBBIN:$LD_LIBRARY_PATH
 
+    export FOAM_USER_APPBIN=/mnt/scratch2/users/$USER/OpenFOAM/$USER-v$FOAM_API/platforms/$WM_OPTIONS/bin
+    export PATH=$FOAM_USER_APPBIN:$PATH
+}
+
+# >>> mamba initialize >>>
+# !! Contents within this block are managed by 'mamba shell init' !!
+export MAMBA_EXE='/users/40146600/miniforge3/bin/mamba';
+export MAMBA_ROOT_PREFIX='/users/40146600/miniforge3';
+__mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+else
+    alias mamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+fi
+unset __mamba_setup
+# <<< mamba initialize <<<

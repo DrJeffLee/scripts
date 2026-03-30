@@ -5,7 +5,7 @@
 #SBATCH --mail-type=END
 #SBATCH --ntasks=1
 #SBATCH --mem-per-cpu=100M
-#SBATCH --partition=lowpri,k2-lowpri
+#SBATCH --partition=k2-lowpri
 #SBATCH --time=1-00:00:00
 
 #------------------------------------------------------------------------------
